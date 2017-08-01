@@ -1,0 +1,609 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:my="http://com.workshop.application"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+<f:loadBundle basename="homeTexts" var="text" />
+<f:loadBundle basename="ordersText" var="textOrder" />
+
+<h:head>
+	<title>#{text['app.title']}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link type="text/css" href="style.css" media="all" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:tabMenu activeIndex="1" style="margin: 0px 0 10px 10px;">
+			<p:menuitem value="#{text.mainPage}" outcome="home.xhtml" />
+			<p:menuitem value="#{text.checkOrder}" outcome="orders.xhtml" />
+			<p:menuitem value="#{text.localization}" outcome="localization.xhtml" />
+			<p:menuitem value="#{text.gallery}" outcome="gallery.xhtml" />
+			<p:menuitem value="#{text.forWorker}" outcome="/login.xhtml" />
+		</p:tabMenu>
+	</h:form>
+
+	<h:form id="orderForm">
+		<p:growl id="tabActionGrowl" showDetail="true" life="2500" />
+		<p:accordionPanel style="margin-right: 0%; position: absolute; left: 1.5%; top: 10%; right: 16%;">
+			<p:ajax event="tabChange" listener="#{orderTabbedView.onTabChange}" update=":orderForm:tabActionGrowl" />
+			<p:ajax event="tabClose" listener="#{orderTabbedView.onTabClose}" update=":orderForm:tabActionGrowl" />
+			
+			<p:tab title="#{textOrder.addNewOrder}">
+				<p:growl id="addOrderGrowl" sticky="true" showDetail="true" />
+				<p:wizard style="margin-right: 10%"
+					nextLabel="#{textOrder.next}" backLabel="#{textOrder.prev}">
+					
+					<p:tab id="addOrderPersonal" title="#{textOrder.personalDetails}">
+						<p:panel header="#{textOrder.personalDetails}">
+						
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.firstName}:*" />
+								<p:inputText value="#{addOrderBean.customer.firstName}" required="true"
+									label="firstname" validatorMessage="#{textOrder.firstNameValidator}"
+									requiredMessage="#{textOrder.firstNameRequired}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+
+								<h:outputText value="#{textOrder.lastName}:*" />
+								<p:inputText value="#{addOrderBean.customer.lastName}"
+									required="true" label="Lastname" validatorMessage="#{textOrder.lastNameValidator}"
+									requiredMessage="#{textOrder.lastNameRequired}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="addOrderAddress" title="#{textOrder.address}">
+						<p:panel header="#{textOrder.permanentAddress}">
+						
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.street}:*" />
+								<p:inputText value="#{addOrderBean.address}" required="true"
+									label="street" validatorMessage="#{textOrder.streetValidator}"
+									requiredMessage="#{textOrder.streetRequired}">
+									<f:validateLength minimum="4" />
+								</p:inputText>
+
+								<h:outputText value="#{textOrder.postcode}:*" />
+								<p:inputMask value="#{addOrderBean.address}" mask="99-999"
+									required="true" label="postcode" requiredMessage="#{textOrder.postCodeRequired}" />
+
+								<h:outputText value="#{textOrder.city}:*" />
+								<p:inputText value="#{addOrderBean.address}" required="true"
+									label="city" validatorMessage="#{textOrder.cityValidator}"
+									requiredMessage="#{textOrder.cityRequired}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="addOrderContact" title="#{textOrder.contact}">
+						<p:panel id="addOrderContactPanel" header="#{textOrder.contactDetails}">
+						
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.emailAddress}:*" />
+								<p:inputText value="#{addOrderBean.customer.emailAddress}"
+									required="true" label="email" requiredMessage="#{textOrder.emailRequired}">
+									<f:validator validatorId="emailValidator"/>
+								</p:inputText>
+
+								<h:outputText value="#{textOrder.phone}:*" />
+								<p:inputMask value="#{addOrderBean.customer.phone}" mask="999999999"
+									required="true" label="phone" requiredMessage="#{textOrder.phoneRequired}"/>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="addOrderCar" title="#{textOrder.car}">
+						<p:panel header="#{textOrder.carDetails}">
+						
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.carName}:*" />
+								<p:inputText value="#{addOrderBean.car.name}" required="true"
+									label="carname" validatorMessage="#{textOrder.carNameValidator}"
+									requiredMessage="#{textOrder.carNameRequired}">
+									<f:validateLength minimum="2"/>
+								</p:inputText>
+
+								<h:outputText value="#{textOrder.vin}:*" />
+								<p:inputText value="#{addOrderBean.car.vin}" required="true"
+									label="vin" requiredMessage="#{textOrder.vinRequired}">
+									<f:validator validatorId="vinValidator" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="addCustomerorder" title="#{textOrder.order}">
+						<p:panel header="#{textOrder.problemDescription}">
+						
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.description}" />
+								<p:inputTextarea rows="6" cols="50"
+									value="#{addOrderBean.customerOrder.description}"
+									required="true" label="description" requiredMessage="#{textOrder.descriptionRequired}" 
+									validatorMessage="#{textOrder.descriptionRequired}">
+									<f:validateLength minimum="50" />
+								</p:inputTextarea>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="addOrderConfirm" title="#{textOrder.confrim}">
+						<p:panel header="#{textOrder.confrimOrder}">
+							<p:wizard nextLabel="#{textOrder.next}"
+								backLabel="#{textOrder.prev}" >
+
+								<p:tab id="addOrderConfrimPersonal" title="#{textOrder.personalDetails}">
+									<p:panel header="#{textOrder.personalDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.firstName}:" />
+											<h:outputText value="#{addOrderBean.customer.firstName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.lastName}:" />
+											<h:outputText value="#{addOrderBean.customer.lastName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.address}:" />
+											<h:outputText value="#{addOrderBean.customer.address}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="addOrderConfrimContact" title="#{textOrder.contact}">
+									<p:panel header="#{textOrder.contactDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.emailAddress}:" />
+											<h:outputText value="#{addOrderBean.customer.emailAddress}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.phone}:" />
+											<h:outputText value="#{addOrderBean.customer.phone}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="addOrderConfrimConfrimCar" title="#{textOrder.car}">
+									<p:panel header="#{textOrder.carDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.carName}:" />
+											<h:outputText value="#{addOrderBean.car.name}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.vin}:" />
+											<h:outputText value="#{addOrderBean.car.vin}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimCustomerOrder" title="#{textOrder.order}">
+									<p:panel id="addOrderPanel" header="#{textOrder.problemDescription}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.description}:" />
+											<h:outputText value="#{addOrderBean.customerOrder.description}" />
+										</h:panelGrid>
+										
+										<p:commandButton value="#{textOrder.add}"
+											style="margin-left:90%" actionListener="#{addOrderBean.generateKey}" 
+											update="addOrderGrowl" process="addOrderPanel" 
+											oncomplete="PF('confrimDialog').show();" />
+									</p:panel>
+									
+									<p:dialog header="#{textOrder.confrim}" widgetVar="confrimDialog"
+										resizable="false" closable="false">
+										<p:panel id="confrimPanel">
+											<h:panelGrid columns="2" cellpadding="5">
+												<h:outputText value="#{textOrder.emailKey}:*"/>
+												<p:inputMask value="#{addOrderBean.enteredKey}" mask="9999" required="true"
+													label="key" requiredMessage="#{textOrder.keyRequired}"
+													validator="#{addOrderBean.validateEmailKey}" />
+												
+												<h:outputText value="#{textOrder.clickToAddOrder}" />
+												<p:commandButton value="#{textOrder.add}"
+													actionListener="#{addOrderBean.save}" 
+													update="addOrderGrowl" process="confrimPanel" />
+												
+												<h:outputText value="#{textOrder.clickToCancelOrder}" />
+												<p:commandButton value="#{textOrder.cancel}" immediate="true"
+													actionListener="#{addOrderBean.cancelAddOrderProcess}" />
+											</h:panelGrid>
+										</p:panel>
+									</p:dialog>
+								</p:tab>
+							</p:wizard>
+						</p:panel>
+					</p:tab>
+				</p:wizard>
+			</p:tab>
+
+			<p:tab id="checkOrderTab" title="#{textOrder.checkOrderState}">
+				<p:growl id="checkOrderGrowl" sticky="true" showDetail="true" />
+				<p:wizard id="checkWizard" style="margin-right: 10%"
+					nextLabel="#{textOrder.next}" backLabel="#{textOrder.prev}">
+					
+					<p:tab id="insertOrderToShow" title="#{textOrder.identification}">
+						<p:panel header="#{textOrder.identification}">
+							
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputLabel value="#{textOrder.orderId}:*" />
+								<p:inputText value="#{checkOrderBean.id}" required="true"
+									label="ID" validator="#{checkOrderBean.validateOrder}" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="checkOrder" title="#{textOrder.order}">
+						<p:panel header="#{textOrder.orderData}">
+							<p:tab title="#{textOrder.contact}">
+								<p:panelGrid columns="2"
+									style="width: 50%; margin: 0px 0px 0px 10px; 
+							        	padding:0px;"
+									columnClasses="label,value" layout="grid">
+									<h:outputText value="#{textOrder.orderId}:" />
+									<h:outputText value="#{checkOrderBean.customerOrder.id}" />
+
+									<h:outputText value="#{textOrder.addDate}:" />
+									<h:outputText value="#{checkOrderBean.customerOrder.date}">
+										<f:convertDateTime pattern="dd-MM-yyyy hh:MM:ss" />
+									</h:outputText>
+
+									<h:outputText value="#{textOrder.firstName}:" />
+									<h:outputText
+										value="#{checkOrderBean.customerOrder.car.customer.firstName}" />
+
+									<h:outputText value="#{textOrder.lastName}:" />
+									<h:outputText
+										value="#{checkOrderBean.customerOrder.car.customer.lastName}" />
+
+									<h:outputText value="#{textOrder.address}:" />
+									<h:outputText
+										value="#{checkOrderBean.customerOrder.car.customer.address}" />
+
+									<h:outputText value="#{textOrder.phone}:" />
+									<h:outputText
+										value="#{checkOrderBean.customerOrder.car.customer.phone}" />
+
+									<h:outputText value="#{textOrder.emailAddress}:" />
+									<h:outputText
+										value="#{checkOrderBean.customerOrder.car.customer.emailAddress}" />
+
+									<h:outputText value="#{textOrder.carName}:" />
+									<h:outputText value="#{checkOrderBean.customerOrder.car.name}" />
+
+									<h:outputText value="#{textOrder.vin}:" />
+									<h:outputText value="#{checkOrderBean.customerOrder.car.vin}" />
+								</p:panelGrid>
+
+								<p:panelGrid columns="1" layout="grid"
+									style="margin:10px 0px 0px 0px; width:93%; padding:10px">
+									<h:outputText value="#{textOrder.problemDescription}:" />
+									<h:outputText
+										value="#{checkOrderBean.customerOrder.description}" />
+								</p:panelGrid>
+
+								<p:panelGrid columns="1" style="width:93%; padding:10px"
+									layout="grid">
+									<h:outputText value="#{textOrder.orderState}:" />
+									<h:outputText value="#{checkOrderBean.stateDescription}" />
+								</p:panelGrid>
+							</p:tab>
+						</p:panel>
+					</p:tab>
+				</p:wizard>
+			</p:tab>
+
+			<p:tab title="#{textOrder.editOrder}">
+				<p:growl id="editGrowl" sticky="true" showDetail="true" life="2500" />
+				<p:wizard style="margin-right: 10%"
+					nextLabel="#{textOrder.next}" backLabel="#{textOrder.prev}">
+					
+					<p:tab id="insertOrderToEdit" title="#{textOrder.identification}">
+						<p:panel header="#{textOrder.identification}">
+							
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputLabel value="#{textOrder.orderId}:*" />
+								<p:inputText value="#{editOrderBean.id}"
+									required="true" label="ID"
+									validator="#{editOrderBean.validateOrder}" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="editOrderPersonal" title="#{textOrder.personalDetails}">
+						<p:panel header="#{textOrder.personalDetails}">
+							
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.firstName}:*" />
+								<p:inputText value="#{editOrderBean.customer.firstName}"
+									required="true" label="Firstname" validatorMessage="#{textOrder.firstNameValidator}" 
+									requiredMessage="#{textOrder.firstNameRequired}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+
+								<h:outputText value="#{textOrder.lastName}:*" />
+								<p:inputText value="#{editOrderBean.customer.lastName}"
+									required="true" label="Lastname" validatorMessage="#{textOrder.lastNameValidator}" 
+									requiredMessage="#{textOrder.lastNameRequired}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="editOrderAddress" title="#{textOrder.address}">
+						<p:panel header="#{textOrder.permanentAddress}">
+							
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.street}:*" />
+								<p:inputText value="#{editOrderBean.address}" required="true"
+									label="Street" validatorMessage="#{textOrder.streetValidator}" 
+									requiredMessage="#{textOrder.streetRequired}" />
+
+								<h:outputText value="#{textOrder.postcode}:*" />
+								<p:inputMask value="#{editOrderBean.address}" mask="99-999"
+									required="true" label="postcode" />
+
+								<h:outputText value="#{textOrder.city}:*" />
+								<p:inputText value="#{editOrderBean.address}" required="true"
+									label="city" validatorMessage="#{textOrder.cityValidator}" 
+									requiredMessage="#{textOrder.cityRequired}"/>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="editOrderContact" title="#{textOrder.contact}">
+						<p:panel header="#{textOrder.contactDetails}">
+							
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.phone}:*" />
+								<p:inputMask value="#{editOrderBean.customer.phone}"
+									mask="999999999" required="true" label="phone" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="editOrderCar" title="#{textOrder.car}">
+						<p:panel header="#{textOrder.carDetails}">
+							
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.carName}:*" />
+								<p:inputText value="#{editOrderBean.car.name}" required="true"
+									label="carname" validatorMessage="#{textOrder.carNameValidator}" 
+									requiredMessage="#{textOrder.carNameRequired}" />
+
+								<h:outputText value="#{textOrder.vin}:*" />
+								<p:inputText value="#{editOrderBean.car.vin}" required="true"
+									label="vin" requiredMessage="#{textOrder.vinRequired}">
+									<f:validator validatorId="vinValidator" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="editCustomerorder" title="#{textOrder.order}">
+						<p:panel header="#{textOrder.problemDescription}">
+							
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textOrder.description}" />
+								<p:inputTextarea rows="6" cols="50"
+									value="#{editOrderBean.customerOrder.description}"
+									required="true" label="description" requiredMessage="#{textOrder.descriptionRequired}" 
+									validatorMessage="#{textOrder.descriptionValidator}"/>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="confirmEditCustomerOrder" title="#{textOrder.confrim}">
+						<p:panel header="#{textOrder.confrimOrder}">
+							<p:wizard nextLabel="#{textOrder.next}"
+								backLabel="#{textOrder.prev}">
+
+								<p:tab id="confrimEditOrderPersonal"
+									title="#{textOrder.personalDetails}">
+									<p:panel header="#{textOrder.personalDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.firstName}:" />
+											<h:outputText value="#{editOrderBean.customer.firstName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.lastName}:" />
+											<h:outputText value="#{editOrderBean.customer.lastName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.address}:" />
+											<h:outputText value="#{editOrderBean.customer.address}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimEditOrderContact" title="#{textOrder.contact}">
+									<p:panel header="#{textOrder.contactDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.phone}:" />
+											<h:outputText value="#{editOrderBean.customer.phone}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimEditOrderCar" title="#{textOrder.car}">
+									<p:panel header="#{textOrder.carDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.carName}:" />
+											<h:outputText value="#{editOrderBean.car.name}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.vin}:" />
+											<h:outputText value="#{editOrderBean.car.vin}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimEditCustomerOrder" title="#{textOrder.order}">
+									<p:panel id="editOrderPanel" header="#{textOrder.problemDescription}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.description}:" />
+											<h:outputText
+												value="#{editOrderBean.customerOrder.description}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+										<p:commandButton value="#{textOrder.edit}"
+											style="margin-left:90%"
+											actionListener="#{editOrderBean.editCustomerOrder}"
+											oncomplete="reload()" update="editGrowl" 
+											process="editOrderPanel" />
+									</p:panel>
+								</p:tab>
+							</p:wizard>
+						</p:panel>
+					</p:tab>
+				</p:wizard>
+			</p:tab>
+
+			<p:tab title="#{textOrder.cancelOrder}">
+				<p:growl id="cancelGrowl" sticky="true" showDetail="true" life="2500" />
+				<p:wizard id="cancelWizard" style="margin-right: 10%"
+					nextLabel="#{textOrder.next}" backLabel="#{textOrder.prev}">
+					
+					<p:tab id="insertOrderToCancel" title="#{textOrder.identification}">
+						<p:panel header="#{textOrder.identification}">
+						
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputLabel value="#{textOrder.orderId}:*" />
+								<p:inputText value="#{cancelOrderBean.id}"
+									required="true" label="ID"
+									validator="#{cancelOrderBean.validateOrder}" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="confirmOrderToCancel" title="#{textOrder.confrim}">
+						<p:panel header="#{textOrder.confrimOrder}">
+							<p:wizard nextLabel="#{textOrder.next}"
+								backLabel="#{textOrder.prev}">
+
+								<p:tab id="confrimCancelPersonal" title="#{textOrder.personalDetails}">
+									<p:panel header="#{textOrder.personalDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.firstName}:" />
+											<h:outputText value="#{cancelOrderBean.customer.firstName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.lastName}:" />
+											<h:outputText value="#{cancelOrderBean.customer.lastName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.address}:" />
+											<h:outputText value="#{cancelOrderBean.customer.address}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimCancelContact" title="#{textOrder.contact}">
+									<p:panel header="#{textOrder.contactDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.emailAddress}:" />
+											<h:outputText value="#{cancelOrderBean.customer.emailAddress}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.phone}:" />
+											<h:outputText value="#{cancelOrderBean.customer.phone}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimCancelCar" title="#{textOrder.car}">
+									<p:panel header="#{textOrder.carDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.carName}:" />
+											<h:outputText value="#{cancelOrderBean.car.name}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textOrder.vin}:" />
+											<h:outputText value="#{cancelOrderBean.car.vin}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimCancelCustomerOrder" title="#{textOrder.order}">
+									<p:panel id="cancelOrderPanel" header="#{textOrder.problemDescription}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textOrder.description}:" />
+											<h:outputText
+												value="#{cancelOrderBean.customerOrder.description}" />
+										</h:panelGrid>
+										<p:commandButton value="#{textOrder.cancel}" update="cancelGrowl" 
+											style="margin-left:90%"
+											actionListener="#{cancelOrderBean.cancelCustomerOrder}"
+											oncomplete="reload()" process="@this" />
+									</p:panel>
+								</p:tab>
+							</p:wizard>
+						</p:panel>
+					</p:tab>
+				</p:wizard>
+			</p:tab>
+		</p:accordionPanel>
+	</h:form>
+
+
+	<div align="right" style="margin-right: 1.5%">
+		<p:clock pattern="dd/MM/yyyy  HH:mm" />
+	</div>
+
+	<div style="font-size: 14px; text-align: center; margin: 5px 0 0 0">
+		<p:panel id="basic" header="#{text.visitCounter}"
+			style="margin-left:85%;">
+			<h:outputText value="#{pageVisitCounter.getVisitNumber()}" style="center" />
+		</p:panel>
+	</div>
+
+	<h:form>
+		<p:themeSwitcher style="position: fixed; bottom: 0; right: 0;">
+			<f:selectItem itemLabel="#{text.colouring}" />
+			<f:selectItems value="#{themeChoice.getThemes()}" />
+		</p:themeSwitcher>
+	</h:form>
+
+	<script type="text/javascript">
+    function reload() {
+        sleep(2500).then(() => {
+        	location.reload();
+        })
+    }
+
+    function sleep (time) {
+    	  return new Promise((resolve) => setTimeout(resolve, time));
+    }
+	</script>
+</h:body>
+</html>

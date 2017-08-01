@@ -1,0 +1,36 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:my="http://com.workshop.application"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+<f:loadBundle basename="homeTexts" var="text" />
+
+<h:head>
+	<title>#{text['app.title']}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link type="text/css" href="styles.css" media="all" />
+</h:head>
+
+<h:body>
+	<p:growl id="loginGrowl" sticky="true" showDetail="true" life="2500" />
+    <h:form>
+    	<p:panel header="#{text.loginPanel}" style="position: fixed; top: 1%; right: 60%; left: 1%;">
+			<h:panelGrid columns="2" cellpadding="5" >
+				<my:myoutput value="#{text.loginLabel}" />
+				<p:inputText id="j_username" value="#{userLoginView.username}"
+					required="true" label="username" />
+	
+				<my:myoutput value="#{text.passwordLabel}" />
+				<p:password id="j_password" value="#{userLoginView.password}"
+					required="true" label="password" />
+	
+				<p:commandButton value="#{text.loginButton}" action="#{userLoginView.login}" update="loginGrowl" />
+			</h:panelGrid>
+		</p:panel>
+	</h:form>
+</h:body>
+</html>

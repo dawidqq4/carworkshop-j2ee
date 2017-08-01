@@ -1,0 +1,112 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:my="http://com.workshop.application"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+<f:loadBundle basename="homeTexts" var="text" />
+
+<h:head>
+	<title>#{text['app.title']}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link type="text/css" href="styles.css" media="all" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:tabMenu activeIndex="0" style="margin: 0px 0 10px 10px;">
+			<p:menuitem value="#{text.mainPage}" outcome="home.xhtml" />
+			<p:menuitem value="#{text.checkOrder}"
+				rendered="#{!userLoginView.loggedIn}" outcome="orders.xhtml" />
+			<p:menuitem value="#{text.localization}"
+				rendered="#{!userLoginView.loggedIn}" outcome="localization.xhtml" />
+			<p:menuitem value="#{text.gallery}"
+				rendered="#{!userLoginView.loggedIn}" outcome="gallery.xhtml" />
+			<p:menuitem value="#{text.forWorker}"
+				rendered="#{!userLoginView.loggedIn}" outcome="/login.xhtml" />
+
+			<p:menuitem value="#{text.newOrders}" rendered="#{request.isUserInRole('worker')}"
+				outcome="workerModule/newOrders.xhtml" />
+			<p:menuitem value="#{text.repairCar}" rendered="#{request.isUserInRole('worker')}"
+				outcome="workerModule/repairCar.xhtml" />
+			<p:menuitem value="#{text.chargeMoney}" rendered="#{request.isUserInRole('worker')}"
+				outcome="workerModule/chargeMoney.xhtml" />
+			<p:menuitem value="#{text.myOrders}" rendered="#{request.isUserInRole('worker')}"
+				outcome="workerModule/ordersHistory.xhtml" />
+
+			<p:menuitem value="#{text.manageWorkers}" rendered="#{request.isUserInRole('admin')}"
+				outcome="secretaryModule/workersManager.xhtml" />
+			<p:menuitem value="#{text.manageOrders}" rendered="#{request.isUserInRole('admin')}"
+				outcome="secretaryModule/ordersManager.xhtml" />
+		</p:tabMenu>
+	</h:form>
+
+	<h:form>
+		<div align="right" style="margin-right: 3.2%; margin-bottom: 0.5%;">
+			<p:commandButton value="Wyloguj" rendered="#{userLoginView.loggedIn}"
+				actionListener="#{userLoginView.logout}" oncomplete="reload()" />
+		</div>
+	</h:form>
+	
+	<div align="right" style="margin-right: 1.5%">
+		<p:clock pattern="dd/MM/yyyy  HH:mm" />
+	</div>
+
+	<div style="font-size: 14px; text-align: center; margin: 5px 0 0 0">
+		<p:panel id="basic" header="#{text.visitCounter}"
+			style="margin-left:85%;">
+			<h:outputText value="#{pageVisitCounter.getVisitNumber()}" style="center" />
+		</p:panel>
+	</div>          
+
+	<p:panel header="Witamy na stronie głównej warsztatu samochodowego" 
+		style="position: fixed; top: 11%; right: 16%; left: 1.5%; bottom: 3%">
+        <h:panelGrid columns="1">
+            <h:outputText style="padding:10px; font-size:110%"
+                value="Firma w obecnej lokalizacji istnieje od 2005 roku. Zmienił się zakres świadczonych usług.	
+                Wykonujemy wszelkiego rodzaju naprawy mechaniczne wszystkich typów pojazdów samochodowych, 
+                a także pojazdów specjalistycznych, autobusów, ciężarowych, dostawczych, osobowych, motocykli, 
+                quadów i również silników łodzi motorowych. Jesteśmy wyposażeni w nowoczesne komputery diagnostyczne 
+                do większości marek obecnych na rynku, mamy możliwości zmian o charakterze tuningowym, mechanicznym 
+                i elektronicznym. Posiadamy najnowsze urządzenia do obsługi klimatyzacji w pojazdach osobowych, 
+                dostawczych, ciężarowych i autokarach, a także ich diagnostyki i dezynfekcji. Świadczymy usługi 
+                komputerowego ustawiania geometrii ze wszelkimi parametrami nawet skomplikowanych układów zawieszenia.
+				Serwis ogumienia wyposażony jest w nowoczesne maszyny do montażu, napraw i wymian. Zapewniamy 
+				najwyższą jakość użytych podzespołów, części, olei i płynów eksploatacyjnych w atrakcyjnych cenach, 
+				choć najważniejszy jest dla nas profesjonalizm oparty na wiedzy i doświadczeniu pracowników z 
+				wieloletnim doświadczeniem." />       
+				<br/>
+				<h:outputText style="font-size:110%" value="Etapy naprawy pojazdy"/>	           
+				<h:outputText style="font-size:110%" value="1.Zlozenie zamówienia(Nalezy wprowadzić dane osobowe i opisać problem)."/>	        
+				<h:outputText style="font-size:110%" value="2.Sekretarka przydziela pracownika do naprawy pojazdu."/>	       
+				<h:outputText style="font-size:110%" value="3.Pracownik wycenia koszt naprawy."/>	    
+				<h:outputText style="font-size:110%" value="4.Pracownik dokonuje naprawy pojazdu."/>	       
+				<h:outputText style="font-size:110%" value="5.Odbiór pojazdu i dokonanie płatności."/>	      
+				<h:outputText style="font-size:110%" value="6.Zakończenie realizacji zamówienia."/>	
+        </h:panelGrid>
+    </p:panel>
+
+	<h:form>
+		<p:themeSwitcher  value="#{bean.theme}" style="position: fixed; bottom: 0; right: 0;">
+			<f:selectItem itemLabel="#{text.colouring}" />
+			<f:selectItems value="#{themeChoice.getThemes()}" />
+			<p:ajax listener="#{bean.saveTheme}" />
+		</p:themeSwitcher>
+	</h:form>
+		
+	<script type="text/javascript">
+    function reload() {
+        sleep(1500).then(() => {
+        	location.reload();
+        })
+    }
+    
+    function sleep (time) {
+    	  return new Promise((resolve) => setTimeout(resolve, time));
+    }
+	</script>
+</h:body>
+</html>

@@ -1,0 +1,67 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+<h:head>
+	<title>System obsługi warsztatu samochodowego</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link type="text/css" href="styles.css" media="all" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:tabMenu activeIndex="0" style="margin: 0 0 10px 10px;">
+			<p:menuitem value="Zgłoszenia" outcome="workerFrame.xhtml" />
+			<p:menuitem value="Wyloguj" outcome="/navigation/home.xhtml" />
+		</p:tabMenu>
+	</h:form>
+
+	<div align="right" style="margin-right: 1.5%">
+		<p:clock pattern="dd/MM/yyyy  HH:mm" />
+	</div>
+
+	<div style="font-size: 14px; text-align: center; margin: 5px 0 0 0">
+		<p:panel id="basic" header="Liczba odwiedzin:"
+			style="margin-left:85%;">
+			<h:outputText value="#{visitCounter.getVisitNumber()}" style="center" />
+		</p:panel>
+	</div>
+	
+		<h:form>
+		<p:panel header="Mail test" style="margin-right: 70%; position: absolute; left: 15px; top: 70px;">
+			<p:messages />
+
+			<h:panelGrid columns="4" cellpadding="5">
+				<h:outputLabel for="recipient" value="Odbiorca: " />
+				<p:inputText id="recipient" value="#{beanValidationView.recipient}" label="recipient" />
+				<p:message for="recipient" />
+				<h:outputText value="#{beanValidationView.recipient}" />
+				
+				<h:outputLabel for="subject" value="Temat: " />
+				<p:inputText id="subject" value="#{beanValidationView.subject}" label="subject" />
+				<p:message for="subject" />
+				<h:outputText value="#{beanValidationView.subject}" />
+				
+				<h:outputLabel for="body" value="Treść: " />
+				<p:inputText id="body" value="#{beanValidationView.body}" label="body" />
+				<p:message for="body" />
+				<h:outputText value="#{beanValidationView.body}" />
+			</h:panelGrid>
+
+			<p:commandButton value="Send" ajax="false" icon="ui-icon-check"	validateClient="true" 
+			actionListener="#{beanValidationView.sendMail()}"/>
+		</p:panel>
+	</h:form>
+
+	<h:form>
+		<p:themeSwitcher style="position: fixed; bottom: 0; right: 0;">
+			<f:selectItem itemLabel="Kolorystyka strony" itemValue="" />
+			<f:selectItems value="#{themeChoices.getThemes()}" />
+		</p:themeSwitcher>
+	</h:form>
+</h:body>
+</html>

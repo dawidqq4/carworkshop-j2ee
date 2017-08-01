@@ -1,0 +1,78 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:my="http://com.workshop.application"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+	<f:loadBundle basename="homeTexts" var="text" />
+	
+<h:head>
+	<title>#{text['app.title']}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link type="text/css" href="styles.css" media="all" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:tabMenu activeIndex="2" style="margin: 0px 0 10px 10px;">
+			<p:menuitem value="#{text.mainPage}" outcome="home.xhtml" />
+			<p:menuitem value="#{text.checkOrder}" outcome="orders.xhtml" />
+			<p:menuitem value="#{text.localization}" outcome="localization.xhtml" />
+			<p:menuitem value="#{text.gallery}" outcome="gallery.xhtml" />
+			<p:menuitem value="#{text.forWorker}" outcome="/login.jsf" />
+		</p:tabMenu>
+	</h:form>
+	
+	<h:form>
+	    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChmPbIZ8syDF-C79vNRH-pf3p-JOeuXcQ"></script>
+		<p:gmap center="50.8802491, 20.6407857" zoom="17" type="HYBRID" style="position: absolute; left: 1.5%; top: 10%; right: 16%;
+			width: 83%; height: 88%" />
+	</h:form>
+
+
+	<div align="right" style="margin-right: 1.5%">
+		<p:clock pattern="dd/MM/yyyy  HH:mm" />
+	</div>
+
+	<div style="font-size: 14px; text-align: center; margin: 5px 0 0 0">
+		<p:panel id="basic" header="#{text.visitCounter}"
+			style="margin-left:85%;">
+			<h:outputText value="#{pageVisitCounter.getVisitNumber()}" style="center" />
+		</p:panel>
+	</div>
+
+	<h:form>
+		<p:themeSwitcher style="position: fixed; bottom: 0; right: 0;">
+			<f:selectItem itemLabel="#{text.colouring}" itemValue="" />
+			<f:selectItems value="#{themeChoice.getThemes()}" />
+		</p:themeSwitcher>
+	</h:form>
+	
+	<script type="text/javascript">
+    function handleLoginRequest(xhr, status, args) {
+        if(args.validationFailed || !args.loggedIn) {
+            PF('dlg').jq.effect("shake", {times:5}, 100);
+        }
+        else {
+            PF('dlg').hide();
+            sleep(1500).then(() => {
+            	window.open("home.jsf", "_self");
+            })
+        }
+    }
+
+    function reload() {
+        sleep(2500).then(() => {
+        	location.reload();
+        })
+    }
+    
+    function sleep (time) {
+    	  return new Promise((resolve) => setTimeout(resolve, time));
+    }
+	</script>
+</h:body>
+</html>

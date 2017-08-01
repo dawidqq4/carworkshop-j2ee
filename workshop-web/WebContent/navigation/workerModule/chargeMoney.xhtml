@@ -1,0 +1,173 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+	<f:loadBundle basename="homeTexts" var="text" />
+	<f:loadBundle basename="workersText" var="textWorker" />
+	<f:loadBundle basename="ordersText" var="textOrder" />
+	
+<h:head>
+	<title>#{text['app.title']}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link type="text/css" href="style.css" media="all" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:tabMenu activeIndex="3" style="margin: 0px 0 10px 10px;">
+			<p:menuitem value="#{text.mainPage}" outcome="/navigation/home.xhtml" />
+			<p:menuitem value="#{text.newOrders}" outcome="newOrders.xhtml" />
+			<p:menuitem value="#{text.repairCar}" outcome="repairCar.xhtml" />
+			<p:menuitem value="#{text.chargeMoney}"	outcome="chargeMoney.xhtml" />
+			<p:menuitem value="#{text.myOrders}" outcome="ordersHistory.xhtml" />
+		</p:tabMenu>
+	</h:form>
+		 
+	<h:form id="orderForm">
+	    <p:fieldset id="availableWorkerOrdersField" legend="#{textOrder.availableOrders}">
+	        <p:dataTable id="availableWorkerOrders" var="customerOrder" value="#{chargeMoneyBean.customerOrders}"
+	        	tableStyle="width:auto">
+	            <p:column style="width:15px">
+	                <h:outputText id="dragIcon" styleClass="ui-icon ui-icon-arrow-4" />
+	                <p:draggable for="dragIcon" revert="true" helper="clone"/>
+	            </p:column>
+	 
+	            <p:column headerText="#{textOrder.orderId}" style="width:25px; text-align: center;">
+	                <h:outputText value="#{customerOrder.id}" />
+	            </p:column>
+	 
+	            <p:column headerText="#{textOrder.addDate}" style="width:95px; text-align: center">
+	                <h:outputText value="#{customerOrder.date}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.lastName}" style="width:125px; text-align: center">
+	                <h:outputText value="#{customerOrder.car.customer.lastName}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.firstName}" style="width:125px; text-align: center">
+	                <h:outputText value="#{customerOrder.car.customer.firstName}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.phone}" style="width:125px; text-align: center;">
+	                <h:outputText value="#{customerOrder.car.customer.phone}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.emailAddress}" style="width:195px; text-align: center;">
+	                <h:outputText value="#{customerOrder.car.customer.emailAddress}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.carName}" style="width:125px; text-align: center;">
+	                <h:outputText value="#{customerOrder.car.name}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.orderState}" style="width:125px; text-align: center;" sortable="true">
+	                <h:outputText value="#{customerOrder.status}" />
+	            </p:column>
+	        </p:dataTable>
+	    </p:fieldset>
+	 
+	    <p:fieldset id="selectedWorkerOrders" legend="Wybrane zamówienia" style="margin-top:20px">
+	        <p:outputPanel id="dropArea">
+	            <h:outputText value="Upuść zamówienie do pobrania opłaty." 
+	            rendered="#{empty chargeMoneyBean.droppedCustomerOrders}" style="font-size:24px;" />
+	            <p:dataTable id="selectedWorkerOrdersTable" var="customerOrder" 
+	            	value="#{chargeMoneyBean.droppedCustomerOrders}" 
+	            	rendered="#{not empty chargeMoneyBean.droppedCustomerOrders}" tableStyle="width:auto">
+		            <p:column headerText="#{textOrder.orderId}" style="width:25px; text-align: center;">
+		                <h:outputText value="#{customerOrder.id}" />
+		            </p:column>
+		 
+		            <p:column headerText="#{textOrder.addDate}" style="width:95px; text-align: center">
+		                <h:outputText value="#{customerOrder.date}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textOrder.lastName}" style="width:125px; text-align: center">
+		                <h:outputText value="#{customerOrder.car.customer.lastName}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textOrder.firstName}" style="width:125px; text-align: center">
+		                <h:outputText value="#{customerOrder.car.customer.firstName}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textOrder.phone}" style="width:125px; text-align: center;">
+		                <h:outputText value="#{customerOrder.car.customer.phone}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textOrder.emailAddress}" style="width:195px; text-align: center;">
+		                <h:outputText value="#{customerOrder.car.customer.emailAddress}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textOrder.carName}" style="width:125px; text-align: center;">
+		                <h:outputText value="#{customerOrder.car.name}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textOrder.orderState}" style="width:125px; text-align: center;">
+		                <h:outputText value="#{customerOrder.status}" />
+		            </p:column>
+	 
+	                <p:column style="width:30px; text-align: center;" >
+	                    <p:commandButton update=":orderForm:display" oncomplete="PF('workerDialog').show()" icon="ui-icon-search">
+	                        <f:setPropertyActionListener value="#{customerOrder}" target="#{chargeMoneyBean.selectedCustomerOrder}" />
+	                    </p:commandButton>
+	                </p:column>
+	            </p:dataTable>
+	        </p:outputPanel>
+	    </p:fieldset>
+	 
+	    <p:droppable for="selectedWorkerOrders" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableWorkerOrders" onDrop="handleDrop">
+	        <p:ajax listener="#{chargeMoneyBean.onWorkerOrderDrop}" update="dropArea availableWorkerOrders" />
+	    </p:droppable>
+	 
+	 	<p:growl id="editOrderGrowl" sticky="true" showDetail="true" life="2500"/>
+	    <p:dialog header="#{textOrder.orderData}" widgetVar="workerDialog" resizable="false" draggable="false"
+	                showEffect="fade" hideEffect="fade" modal="true">
+	        <p:outputPanel id="display">
+	        	<p:messages />	
+	            <h:panelGrid columns="2" cellpadding="4" rendered="#{not empty chargeMoneyBean.selectedCustomerOrder}">         
+	                <h:outputText value="#{textOrder.orderId}:" />
+	                <h:outputText value="#{chargeMoneyBean.selectedCustomerOrder.id}" style="font-weight:bold"/>
+	 
+	                <h:outputText value="#{textOrder.addDate}:" />
+	                <h:outputText value="#{chargeMoneyBean.selectedCustomerOrder.date}" style="font-weight:bold"/>
+	                
+	                <h:outputText value="#{textOrder.problemDescription}:" />
+	                <h:outputText value="#{chargeMoneyBean.selectedCustomerOrder.description}" 
+	                	style="font-weight:bold"/>
+			        
+			        <p:commandButton value="Zatwierdź pobranie opłaty" actionListener="#{chargeMoneyBean.chargeMoney}" 
+			        	update="display" />
+	            </h:panelGrid>
+	        </p:outputPanel>
+	    </p:dialog>
+	</h:form>
+
+	<h:form>
+		<p:themeSwitcher style="position: fixed; bottom: 0; right: 0;">
+			<f:selectItem itemLabel="#{text.colouring}" itemValue="" />
+			<f:selectItems value="#{themeChoices.getThemes()}" />
+		</p:themeSwitcher>
+	</h:form>
+
+	<script type="text/javascript">
+    function reload() {
+        sleep(1500).then(() => {
+        	location.reload();
+        })
+    }
+    
+    function sleep (time) {
+    	  return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    function handleDrop(event, ui) {
+        var droppedCar = ui.draggable;
+ 
+        droppedCar.fadeOut('fast');
+    }
+	</script>
+</h:body>
+</html>

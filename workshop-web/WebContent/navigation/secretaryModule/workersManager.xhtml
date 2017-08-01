@@ -1,0 +1,552 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+	<f:loadBundle basename="homeTexts" var="text" />
+	<f:loadBundle basename="ordersText" var="textOrder" />
+	<f:loadBundle basename="workersText" var="textWorker" />
+	
+<h:head>
+	<title>#{text['app.title']}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link type="text/css" href="style.css" media="all" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:tabMenu activeIndex="1" style="margin: 0px 0 10px 10px;">
+			<p:menuitem value="#{text.mainPage}" outcome="/navigation/home.xhtml" />
+			<p:menuitem value="#{text.manageWorkers}" outcome="workersManager.xhtml" />
+			<p:menuitem value="#{text.manageOrders}" outcome="ordersManager.xhtml" />
+		</p:tabMenu>
+	</h:form>
+
+	<h:form id="workerForm">
+		<p:growl id="tabActionGrowl" showDetail="true" life="2500" />
+		<p:accordionPanel widgetVar="accordion"
+			style="margin-right: 0%; position: absolute; left: 1.5%; top: 10%; right: 16%;">
+			<p:ajax event="tabChange" listener="#{workerTabbedView.onTabChange}" update=":workerForm:tabActionGrowl" />
+			<p:ajax event="tabClose" listener="#{workerTabbedView.onTabClose}" update=":workerForm:tabActionGrowl" />
+			
+			<p:tab title="#{textWorker.addNewWorker}">
+				<p:growl id="addWorkerGrowl" sticky="true" showDetail="true" life="3000"/>
+				<p:wizard style="margin-right: 10%"
+					nextLabel="#{textWorker.next}" backLabel="#{textWorker.prev}">
+					
+					<p:tab id="addWorkerPersonal" title="#{textWorker.personalDetails}">
+						<p:panel header="#{textWorker.personalDetails}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textWorker.firstName}:*" />
+								<p:inputText value="#{addWorkerBean.worker.firstName}" required="true"
+									label="firstname" requiredMessage="#{textOrder.firstNameRequired}" 
+									validatorMessage="#{textOrder.firstNameValidator}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+
+								<h:outputText value="#{textWorker.lastName}:*" />
+								<p:inputText value="#{addWorkerBean.worker.lastName}"
+									required="true" label="Lastname" requiredMessage="#{textOrder.lastNameRequired}" 
+									validatorMessage="#{textOrder.lastNameValidator}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="addWorkerAddress" title="#{textWorker.address}">
+						<p:panel header="#{textWorker.permanentAddress}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textWorker.street}:*" />
+								<p:inputText value="#{addWorkerBean.address}" required="true"
+									label="street" requiredMessage="#{textOrder.streetRequired}"
+									validatorMessage="#{textOrder.streetValidator}">
+									<f:validateLength minimum="4" />
+								</p:inputText>
+
+								<h:outputText value="#{textWorker.postcode}:*" />
+								<p:inputMask value="#{addWorkerBean.address}" mask="99-999"
+									required="true" label="postcode" />
+
+								<h:outputText value="#{textWorker.city}:*" />
+								<p:inputText value="#{addWorkerBean.address}" required="true"
+									label="city" requiredMessage="#{textOrder.cityRequired}"
+									validatorMessage="#{textOrder.cityValidator}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="addWorkerContact" title="#{textWorker.contact}">
+						<p:panel header="#{textWorker.contactDetails}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textWorker.emailAddress}:*" />
+								<p:inputText value="#{addWorkerBean.worker.emailAddress}"
+									required="true" label="email" requiredMessage="#{textOrder.emailRequired}">
+									<f:validator validatorId="emailValidator" />
+								</p:inputText>
+
+								<h:outputText value="#{textWorker.phone}:*" />
+								<p:inputMask value="#{addWorkerBean.worker.phone}"
+									mask="999999999" required="true" label="phone" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+					
+					<p:tab id="addWorkerLoginData" title="#{textWorker.loginTitle}">
+						<p:panel header="#{textWorker.loginDetails}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textWorker.login}:*" />
+								<p:inputText value="#{addWorkerBean.worker.username}"
+									required="true" label="Login" validatorMessage="#{textWorker.loginValidate}" 
+									requiredMessage="#{textWorker.loginRequired}">
+									<f:validateLength minimum="5" />
+								</p:inputText>
+
+								<h:outputText value="#{textWorker.password}:*" />
+								<p:password value="#{addWorkerBean.worker.password}"
+									required="true" label="Password" validator="#{addWorkerBean.validatePassword}" 
+									requiredMessage="#{textWorker.passwordRequired}">
+									<f:attribute name="confrimPassword" value="#{confrimPassword}" />
+								</p:password>
+								
+								<h:outputText value="#{textWorker.confrimPassword}:*" />
+								<p:password id="confrimPassword" binding="#{confrimPassword}"
+									required="true" requiredMessage="#{textWorker.confrimPasswordRequired}"/>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="addWorkerConfirm" title="#{textWorker.confrim}">
+						<p:panel header="#{textWorker.confrimWorker}">
+							<p:wizard nextLabel="#{textWorker.next}"
+								backLabel="#{textWorker.prev}">
+
+								<p:tab id="addWorkerConfrimPersonal" title="#{textWorker.personalDetails}">
+									<p:panel header="#{textWorker.personalDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textWorker.firstName}" />
+											<h:outputText value="#{addWorkerBean.worker.firstName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textWorker.lastName}" />
+											<h:outputText value="#{addWorkerBean.worker.lastName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textWorker.address}" />
+											<h:outputText value="#{addWorkerBean.worker.address}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="addWorkerConfrimContact" title="#{textWorker.contact}">
+									<p:panel header="#{textWorker.contactDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textWorker.emailAddress} " />
+											<h:outputText value="#{addWorkerBean.worker.emailAddress}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textWorker.phone} " />
+											<h:outputText value="#{addWorkerBean.worker.phone}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimLoginData" title="#{textWorker.loginTitle}">
+									<p:panel id="addWorkerPanel" header="#{textWorker.loginDetails}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textWorker.login} " />
+											<h:outputText styleClass="outputLabel"
+												value="#{addWorkerBean.worker.username}" />
+										</h:panelGrid>
+										<p:commandButton value="#{textWorker.add}"
+											style="margin-left:90%"
+											actionListener="#{addWorkerBean.save()}" update="addWorkerGrowl"
+											process="addWorkerPanel" oncomplete="reload()" />
+									</p:panel>
+								</p:tab>
+							</p:wizard>
+						</p:panel>
+					</p:tab>
+				</p:wizard>
+			</p:tab>
+
+			<p:tab id="checkWorkerTab" title="#{textWorker.showWorker}">
+				<p:growl id="checkWorkerGrowl" sticky="true" showDetail="true" life="2500"/>
+				<p:wizard id="checkWizard" style="margin-right: 10%"
+					nextLabel="#{textWorker.next}" backLabel="#{textWorker.prev}">
+					
+					<p:tab id="insertWorkerToShow" title="#{textWorker.identification}">
+						<p:panel header="#{textWorker.identification}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputLabel value="#{textWorker.workerId}:*" />
+								<p:inputText value="#{checkWorkerBean.id}" required="true"
+									label="ID" validator="#{checkWorkerBean.validateWorker}" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="checkOrder" title="#{textWorker.worker}">
+						<p:panel header="#{textWorker.workerData}">
+							<p:tab title="#{textWorker.contact}">
+								<p:panelGrid columns="2"
+									style="width: 50%; margin: 0px 0px 0px 10px; 
+							        	padding:0px;"
+									columnClasses="label,value" layout="grid">
+									<h:outputText value="#{textWorker.workerId}" />
+									<h:outputText value="#{checkWorkerBean.worker.id}" />
+
+									<h:outputText value="#{textWorker.firstName}" />
+									<h:outputText
+										value="#{checkWorkerBean.worker.firstName}" />
+
+									<h:outputText value="#{textWorker.lastName}" />
+									<h:outputText
+										value="#{checkWorkerBean.worker.lastName}" />
+
+									<h:outputText value="#{textWorker.address}" />
+									<h:outputText
+										value="#{checkWorkerBean.worker.address}" />
+
+									<h:outputText value="#{textWorker.phone}" />
+									<h:outputText
+										value="#{checkWorkerBean.worker.phone}" />
+										
+									<h:outputText value="#{textWorker.login}" />
+									<h:outputText
+										value="#{checkWorkerBean.worker.username}" />
+								</p:panelGrid>
+							</p:tab>
+						</p:panel>
+					</p:tab>
+				</p:wizard>
+			</p:tab>
+
+			<p:tab id="showWorkersTab" title="#{textWorker.showWorkers}">
+				<p:dataTable id="availableWorkers" var="worker" value="#{showWorkersBean.workers}"
+		        	tableStyle="width:auto">
+		            <p:column headerText="#{textWorker.workerId}" style="width:25px; text-align: center;">
+		                <h:outputText value="#{worker.id}" />
+		            </p:column>
+		 		            
+		            <p:column headerText="#{textWorker.lastName}" style="width:125px; text-align: center">
+		                <h:outputText value="#{worker.lastName}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textWorker.firstName}" style="width:125px; text-align: center">
+		                <h:outputText value="#{worker.firstName}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textWorker.address}" style="width:125px; text-align: center;">
+		                <h:outputText value="#{worker.address}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textWorker.emailAddress}" style="width:195px; text-align: center;">
+		                <h:outputText value="#{worker.emailAddress}" />
+		            </p:column>
+		            
+		            <p:column headerText="#{textWorker.login}" style="width:125px; text-align: center;">
+		                <h:outputText value="#{worker.username}" />
+		            </p:column>
+		          
+		          	<p:column style="width:30px; text-align: center;" >
+	                    <p:commandButton update=":workerForm:j_idt10:displayWorker" process="availableWorkers"
+	                    oncomplete="PF('workerDialog').show()" icon="ui-icon-search">
+	                        <f:setPropertyActionListener value="#{worker}" target="#{showWorkersBean.selectedWorker}" />
+	                    </p:commandButton>
+	                </p:column>
+		          
+		        </p:dataTable>
+		        
+		        <p:dialog header="#{textWorker.workerData}" widgetVar="workerDialog" resizable="false" draggable="false"
+			   		showEffect="fade" hideEffect="fade" modal="true">
+			        <p:outputPanel id="displayWorker">
+			            <h:panelGrid columns="2" cellpadding="4" rendered="#{not empty showWorkersBean.selectedWorker}">
+			           		<h:outputText value="#{textWorker.workerId}:" />
+	                		<h:outputText value="#{showWorkersBean.selectedWorker.id}" style="font-weight:bold"/>
+			            
+			            	<h:outputText value="#{textWorker.lastName}:" />
+	                		<h:outputText value="#{showWorkersBean.selectedWorker.lastName}" style="font-weight:bold"/>
+			            	
+			            	<h:outputText value="#{textWorker.firstName}:" />
+	                		<h:outputText value="#{showWorkersBean.selectedWorker.firstName}" style="font-weight:bold"/>
+			            
+			            	<h:outputText value="#{textWorker.address}:" />
+	                		<h:outputText value="#{showWorkersBean.selectedWorker.address}" style="font-weight:bold"/>
+			            
+			            	<h:outputText value="#{textWorker.emailAddress}:" />
+	                		<h:outputText value="#{showWorkersBean.selectedWorker.emailAddress}" style="font-weight:bold"/>
+			            
+			            	<h:outputText value="#{textWorker.login}:" />
+	                		<h:outputText value="#{showWorkersBean.selectedWorker.username}" style="font-weight:bold"/>
+			            </h:panelGrid>
+			        </p:outputPanel>
+			    </p:dialog>
+			</p:tab>
+			
+			<p:tab title="#{textWorker.editWorker}">
+				<p:growl id="editGrowl" sticky="true" showDetail="true" life="2500" />
+				<p:wizard style="margin-right: 10%"
+					nextLabel="#{textWorker.next}" backLabel="#{textWorker.prev}">
+					
+					<p:tab id="insertWorkerToEdit" title="#{textWorker.identification}">
+						<p:panel header="#{textWorker.identification}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputLabel value="#{textWorker.workerId}:*" />
+								<p:inputText value="#{editWorkerBean.id}"
+									required="true" label="ID"
+									validator="#{editWorkerBean.validateWorker}" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="editWorkerPersonal" title="#{textWorker.personalDetails}">
+						<p:panel header="#{textWorker.personalDetails}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textWorker.firstName}:*" />
+								<p:inputText value="#{editWorkerBean.worker.firstName}"
+									required="true" label="Firstname" requiredMessage="#{textOrder.firstNameRequired}" 
+									validatorMessage="#{textOrder.firstNameValidator}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+
+								<h:outputText value="#{textWorker.lastName}:*" />
+								<p:inputText value="#{editWorkerBean.worker.lastName}"
+									required="true" label="Lastname" requiredMessage="#{textOrder.lastNameRequired}" 
+									validatorMessage="#{textOrder.lastNameValidator}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="editWorkerAddress" title="#{textWorker.address}">
+						<p:panel header="#{textWorker.permanentAddress}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textWorker.street}:*" />
+								<p:inputText value="#{editWorkerBean.address}" required="true"
+									label="Street" requiredMessage="#{textOrder.streetRequired}"
+									validatorMessage="#{textOrder.streetValidator}">
+									<f:validateLength minimum="4" />
+								</p:inputText>
+
+								<h:outputText value="#{textWorker.postcode}:*" />
+								<p:inputMask value="#{editWorkerBean.address}" mask="99-999"
+									required="true" label="postcode" />
+
+								<h:outputText value="#{textWorker.city}:*" />
+								<p:inputText value="#{editWorkerBean.address}" required="true"
+									label="city" requiredMessage="#{textOrder.cityRequired}"
+									validatorMessage="#{textOrder.cityValidator}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="editWorkerContact" title="#{textWorker.contact}">
+						<p:panel header="#{textWorker.contactDetails}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textWorker.phone}:*" />
+								<p:inputMask value="#{editWorkerBean.worker.phone}"
+									mask="999999999" required="true" label="phone" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+					
+					<p:tab id="editWorkerPassword" title="#{textWorker.loginTitle}">
+						<p:panel header="#{textWorker.loginDetails}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputText value="#{textWorker.password}:*" />
+								<p:password value="#{editWorkerBean.worker.password}"
+									required="true" label="Password" validator="#{editWorkerBean.validatePassword}" 
+									requiredMessage="#{textWorker.passwordRequired}">
+									<f:attribute name="confrimPassword" value="#{confrimPassword}" />
+								</p:password>
+								
+								<h:outputText value="#{textWorker.confrimPassword}:*" />
+								<p:password id="confrimPassword" binding="#{confrimPassword}"
+									required="true" requiredMessage="#{textWorker.confrimPasswordRequired}"/>
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="confirmEditWorker" title="#{textWorker.confrim}">
+						<p:panel header="#{textWorker.confrimWorker}">
+							<p:wizard nextLabel="#{textWorker.next}"
+								backLabel="#{textWorker.prev}">
+
+								<p:tab id="confrimEditWorkerPersonal"
+									title="#{textWorker.personalDetails}">
+									<p:panel header="#{textWorker.personalDetails}">
+										<p:messages />
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textWorker.firstName}:" />
+											<h:outputText value="#{editWorkerBean.worker.firstName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textWorker.lastName}:" />
+											<h:outputText value="#{editWorkerBean.worker.lastName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textWorker.address}:" />
+											<h:outputText value="#{editWorkerBean.worker.address}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimEditWorkerContact" title="#{textWorker.contact}">
+									<p:panel id="editWorkerPanel" header="#{textWorker.contactDetails}">
+										<p:messages />
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textWorker.phone}:" />
+											<h:outputText value="#{editWorkerBean.worker.phone}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+										<p:commandButton value="#{textWorker.edit}"
+											style="margin-left:90%"
+											actionListener="#{editWorkerBean.editWorker}"
+											oncomplete="reload()" update="editGrowl" 
+											process="editWorkerPanel" />
+									</p:panel>
+								</p:tab>
+							</p:wizard>
+						</p:panel>
+					</p:tab>
+				</p:wizard>
+			</p:tab>
+
+			<p:tab title="#{textWorker.deleteWorker}">
+				<p:growl id="removeGrowl" sticky="true" showDetail="true" life="2500" />
+				<p:wizard style="margin-right: 10%"
+					nextLabel="#{textWorker.next}" backLabel="#{textWorker.prev}">
+					<p:tab id="insertWorkerToCancel" title="#{textWorker.identification}">
+						<p:panel header="#{textWorker.identification}">
+							<p:messages />
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<h:outputLabel value="#{textWorker.workerId}:*" />
+								<p:inputText value="#{removeWorkerBean.id}"
+									required="true" label="ID"
+									validator="#{removeWorkerBean.validateWorker}" />
+							</h:panelGrid>
+						</p:panel>
+					</p:tab>
+
+					<p:tab id="confirmWorkerToRemove" title="#{textWorker.confrim}">
+						<p:panel header="#{textWorker.confrimWorker}">
+							<p:wizard nextLabel="#{textWorker.next}"
+								backLabel="#{textWorker.prev}">
+
+								<p:tab id="confrimRemovePersonal" title="#{textWorker.personalDetails}">
+									<p:panel header="#{textWorker.personalDetails}">
+										<p:messages />
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textWorker.firstName}:" />
+											<h:outputText value="#{removeWorkerBean.worker.firstName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textWorker.lastName}:" />
+											<h:outputText value="#{removeWorkerBean.worker.lastName}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textWorker.address}:" />
+											<h:outputText value="#{removeWorkerBean.worker.address}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimRemoveContact" title="#{textWorker.contact}">
+									<p:panel header="#{textWorker.contactDetails}">
+										<p:messages />
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textWorker.emailAddress}:" />
+											<h:outputText value="#{removeWorkerBean.worker.emailAddress}"
+												styleClass="outputLabel" />
+
+											<h:outputText value="#{textWorker.phone}:" />
+											<h:outputText value="#{removeWorkerBean.worker.phone}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+
+								<p:tab id="confrimRemoveCustomerOrder" title="#{textWorker.loginTitle}">
+									<p:panel id="cancelOrderPanel" header="#{textWorker.loginDetails}">
+										<p:messages />
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputText value="#{textWorker.login}:" />
+											<h:outputText
+												value="#{removeWorkerBean.worker.username}"
+												styleClass="outputLabel" />
+										</h:panelGrid>
+										<p:commandButton value="#{textWorker.remove}" update="removeGrowl" 
+											style="margin-left:90%"
+											actionListener="#{removeWorkerBean.removeWorker}"
+											oncomplete="reload()" process="cancelOrderPanel" />
+									</p:panel>
+								</p:tab>
+							</p:wizard>
+						</p:panel>
+					</p:tab>
+				</p:wizard>
+			</p:tab>
+		</p:accordionPanel>
+	</h:form>
+
+	<h:form>
+		<p:growl style="" id="logoutGrowl" sticky="true" showDetail="true" life="2500" />
+		<div align="right" style="margin-right: 3.2%; margin-bottom: 0.5%;">
+			<p:commandButton value="Wyloguj" rendered="#{userLoginView.loggedIn}"
+				update="logoutGrowl" actionListener="#{userLoginView.logout}" oncomplete="reload()" />
+		</div>
+	</h:form>
+
+	<div align="right" style="margin-right: 1.5%">
+		<p:clock pattern="dd/MM/yyyy  HH:mm" />
+	</div>
+
+	<div style="font-size: 14px; text-align: center; margin: 5px 0 0 0">
+		<p:panel id="basic" header="#{text.visitCounter}"
+			style="margin-left:85%;">
+			<h:outputText value="#{visitCounter.getVisitNumber()}" style="center" />
+		</p:panel>
+	</div>
+
+	<h:form>
+		<p:themeSwitcher style="position: fixed; bottom: 0; right: 0;">
+			<f:selectItem itemLabel="#{text.colouring}" itemValue="" />
+			<f:selectItems value="#{themeChoices.getThemes()}" />
+		</p:themeSwitcher>
+	</h:form>
+
+	<script type="text/javascript">
+    function reload() {
+        sleep(1500).then(() => {
+        	location.reload();
+        })
+    }
+    
+    function sleep (time) {
+    	  return new Promise((resolve) => setTimeout(resolve, time));
+    }
+	</script>
+</h:body>
+</html>

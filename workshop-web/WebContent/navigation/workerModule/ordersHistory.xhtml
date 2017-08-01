@@ -1,0 +1,145 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+	<f:loadBundle basename="homeTexts" var="text" />
+	<f:loadBundle basename="workersText" var="textWorker" />
+	<f:loadBundle basename="ordersText" var="textOrder" />
+	
+<h:head>
+	<title>#{text['app.title']}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link type="text/css" href="style.css" media="all" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<p:tabMenu activeIndex="4" style="margin: 0px 0 10px 10px;">
+			<p:menuitem value="#{text.mainPage}" outcome="/navigation/home.xhtml" />
+			<p:menuitem value="#{text.newOrders}" outcome="newOrders.xhtml" />
+			<p:menuitem value="#{text.repairCar}" outcome="repairCar.xhtml" />
+			<p:menuitem value="#{text.chargeMoney}"	outcome="chargeMoney.xhtml" />
+			<p:menuitem value="#{text.myOrders}" outcome="ordersHistory.xhtml" />
+		</p:tabMenu>
+	</h:form>
+		 
+	<h:form id="orderForm">
+	    <p:fieldset id="availableWorkerOrdersField" legend="Zestawienie realizowanych zamówień">
+	        <p:dataTable id="availableWorkerOrders" var="customerOrder" value="#{ordersHistoryBean.customerOrders}"
+	        	tableStyle="width:auto">
+	            <p:column style="width:15px">
+	                <h:outputText id="dragIcon" styleClass="ui-icon ui-icon-arrow-4" />
+	                <p:draggable for="dragIcon" revert="true" helper="clone"/>
+	            </p:column>
+	 
+	            <p:column headerText="#{textOrder.orderId}" style="width:25px; text-align: center;">
+	                <h:outputText value="#{customerOrder.id}" />
+	            </p:column>
+	 
+	            <p:column headerText="#{textOrder.addDate}" style="width:95px; text-align: center">
+	                <h:outputText value="#{customerOrder.date}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.lastName}" style="width:125px; text-align: center">
+	                <h:outputText value="#{customerOrder.car.customer.lastName}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.firstName}" style="width:125px; text-align: center">
+	                <h:outputText value="#{customerOrder.car.customer.firstName}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.phone}" style="width:125px; text-align: center;">
+	                <h:outputText value="#{customerOrder.car.customer.phone}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.emailAddress}" style="width:195px; text-align: center;">
+	                <h:outputText value="#{customerOrder.car.customer.emailAddress}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.carName}" style="width:125px; text-align: center;">
+	                <h:outputText value="#{customerOrder.car.name}" />
+	            </p:column>
+	            
+	            <p:column headerText="#{textOrder.orderState}" style="width:125px; text-align: center;" sortable="true">
+	                <h:outputText value="#{customerOrder.status}" />
+	            </p:column>
+	            
+	            <p:column style="width:30px; text-align: center;" >
+	              	<p:commandButton update=":orderForm:display" oncomplete="PF('workerDialog').show()" icon="ui-icon-search">
+	                	<f:setPropertyActionListener value="#{customerOrder}" target="#{ordersHistoryBean.selectedCustomerOrder}" />
+	            	</p:commandButton>
+	            </p:column>
+	        </p:dataTable>
+	    </p:fieldset>
+	 
+	    <p:dialog header="#{textOrder.orderData}" widgetVar="workerDialog" resizable="false" draggable="false"
+	                showEffect="fade" hideEffect="fade" modal="true">
+	        <p:outputPanel id="display">
+	        	<p:messages />	
+	            <h:panelGrid columns="2" cellpadding="4" rendered="#{not empty ordersHistoryBean.selectedCustomerOrder}">         	                	
+	                <h:outputText value="#{textOrder.orderId}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.id}" style="font-weight:bold"/>
+	 
+	                <h:outputText value="#{textOrder.addDate}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.date}" style="font-weight:bold"/>
+	                
+	                <h:outputText value="#{textOrder.lastName}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.car.customer.lastName}" 
+	                	style="font-weight:bold"/>
+	 
+	                <h:outputText value="#{textOrder.firstName}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.car.customer.firstName}" 
+	                	style="font-weight:bold"/>
+	                
+	                <h:outputText value="#{textOrder.phone}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.car.customer.phone}" 
+	                	style="font-weight:bold"/>
+	 
+	                <h:outputText value="#{textOrder.emailAddress}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.car.customer.emailAddress}" 
+	                	style="font-weight:bold"/>
+	                
+	                <h:outputText value="#{textOrder.carName}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.car.name}" style="font-weight:bold"/>
+	 
+	                <h:outputText value="#{textOrder.orderState}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.status}" style="font-weight:bold"/>
+	                
+	                <h:outputText value="#{textOrder.problemDescription}:" />
+	                <h:outputText value="#{ordersHistoryBean.selectedCustomerOrder.description}" 
+	                	style="font-weight:bold"/>
+	            </h:panelGrid>
+	        </p:outputPanel>
+	    </p:dialog>
+	</h:form>
+
+	<h:form>
+		<p:themeSwitcher style="position: fixed; bottom: 0; right: 0;">
+			<f:selectItem itemLabel="#{text.colouring}" itemValue="" />
+			<f:selectItems value="#{themeChoices.getThemes()}" />
+		</p:themeSwitcher>
+	</h:form>
+
+	<script type="text/javascript">
+    function reload() {
+        sleep(1500).then(() => {
+        	location.reload();
+        })
+    }
+    
+    function sleep (time) {
+    	  return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    function handleDrop(event, ui) {
+        var droppedCar = ui.draggable;
+ 
+        droppedCar.fadeOut('fast');
+    }
+	</script>
+</h:body>
+</html>
